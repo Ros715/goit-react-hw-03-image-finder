@@ -1,6 +1,7 @@
 import React from "react";
 import Searchbar from "./components/Searchbar/Searchbar.js";
 import ImageGallery from "./components/ImageGallery/ImageGallery.js";
+import ImageGalleryItem from "./components/ImageGalleryItem/ImageGalleryItem.js";
 import Button from "./components/Button/Button.js";
 import "./App.css";
 //import { v4 as uuidv4 } from "uuid";
@@ -70,7 +71,11 @@ class App extends React.Component {
     return (
       <div>
         <Searchbar onSubmit={this.onNewRequest} />
-        <ImageGallery photosList={this.state.photosList} />
+        <ImageGallery photosList={this.state.photosList}>
+          {this.state.photosList.map((photo) => {
+            return <ImageGalleryItem photo={photo} key={photo.id} />;
+          })}
+        </ImageGallery>
         {this.state.loadInProggress && (
           <Loader
             type="Puff"
