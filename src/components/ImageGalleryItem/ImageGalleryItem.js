@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import "./ImageGalleryItem.css";
 
 class ImageGalleryItem extends React.Component {
@@ -19,5 +20,10 @@ class ImageGalleryItem extends React.Component {
     );
   }
 }
+
+ImageGalleryItem.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  photo: PropTypes.object.isRequired,
+};
 
 export default ImageGalleryItem;
