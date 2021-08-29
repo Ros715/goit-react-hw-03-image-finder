@@ -7,11 +7,6 @@ class ImageGallery extends React.Component {
     super(props);
   }*/
 
-  /*
-        {this.props.photosList.map((photo) => {
-          return <ImageGalleryItem photo={photo} key={photo.id} />;
-        })}
-    */
   render() {
     return <ul className="ImageGallery">{this.props.children}</ul>;
   }

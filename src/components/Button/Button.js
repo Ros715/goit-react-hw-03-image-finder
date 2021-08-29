@@ -8,9 +8,11 @@ class Button extends React.Component {
 
   render() {
     return (
-      <button type="button" className="Button" onClick={this.props.onClick}>
-        Load more
-      </button>
+      <div>
+        <button type="button" className="Button" onClick={this.props.onClick}>
+          Load more
+        </button>
+      </div>
     );
   }
 }
