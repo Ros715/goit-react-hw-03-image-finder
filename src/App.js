@@ -4,71 +4,42 @@ import ImageGallery from "./components/ImageGallery/ImageGallery.js";
 import ImageGalleryItem from "./components/ImageGalleryItem/ImageGalleryItem.js";
 import Button from "./components/Button/Button.js";
 import Modal from "./components/Modal/Modal.js";
+import apiService from "./components/apiService/apiService.js";
 import "./App.css";
 //import { v4 as uuidv4 } from "uuid";
 import Loader from "react-loader-spinner";
 
 class App extends React.Component {
-  constructor(props) {
+  state = {
+    loadInProggress: false,
+    enableLoadMore: false,
+    enableModal: false,
+    photosList: [],
+    query: "",
+    page: 1,
+    perPage: 12,
+    largeURL: "",
+  };
+
+  /*constructor(props) {
     super(props);
-    this.query = "";
-    this.page = 1;
-    this.perPage = 12;
-    this.largeURL = "";
-    this.state = {
-      //query: "",
-      //page: 1,
-      //perPage: 12,
-      loadInProggress: false,
-      enableLoadMore: false,
-      enableModal: false,
-      photosList: [],
-    };
-    document.addEventListener("keydown", (e) => {
-      //console.log("code", e.code, "key", e.key, "keyCode", e.keyCode);
-      if (e.key === "Escape") {
-        //this.setState({ enableModal: false });
-        //this.state.enableModal = false;
-        this.closeModal();
-      }
-    });
-  }
+  }*/
 
   formatQuery = (text) => {
     return text.trim().split(" ").join("+");
   };
 
-  apiService = (searchQuery, page, perPage) => {
-    const myKey = "22353815-5fa21056c210e4ef7062efe69";
-    //console.log("page", page, searchQuery);
-    return fetch(
-      `https://pixabay.com/api/?image_type=photo&orientation=horizontal&q=${searchQuery}&page=${page}&per_page=${perPage}&key=${myKey}`
-    ).then((response) => response.json());
-  };
-
-  loadPhotos = () => {
+  loadPhotos = (query, page) => {
+    //console.log("query=", query, "page=", page);
     this.setState({ loadInProggress: true });
-    this.apiService(this.query, this.page, this.perPage).then((apiOutput) => {
-      //console.log(apiOutput.hits);
+    apiService(query, page, this.state.perPage).then((apiOutput) => {
       this.setState({
-        photosList: this.state.photosList.concat(
-          apiOutput.hits.map((photo) => {
-            return {
-              id: photo.id,
-              webformatURL: photo.webformatURL,
-              largeImageURL: photo.largeImageURL,
-            };
-          })
-        ),
+        query: query,
+        page: page,
+        enableLoadMore: apiOutput.hits.length === this.state.perPage,
+        loadInProggress: false,
+        photosList: this.state.photosList.concat(apiOutput.hits),
       });
-      this.setState({ loadInProggress: false });
-      //console.log(this.state.photosList.length);
-      if (apiOutput.hits.length === this.perPage) {
-        this.page += 1;
-        this.setState({ enableLoadMore: true });
-      } else {
-        this.setState({ enableLoadMore: false });
-      }
 
       window.scrollTo({
         top: document.documentElement.scrollHeight,
@@ -78,22 +49,14 @@ class App extends React.Component {
   };
 
   onNewRequest = (query) => {
-    //console.log(query);
-
-    this.query = this.formatQuery(query);
-    this.page = 1;
     this.setState({
-      //query: this.formatQuery(query),
-      //page: 1,
       photosList: [],
     });
-
-    this.loadPhotos();
+    this.loadPhotos(query, 1);
   };
 
   onLoadMore = () => {
-    //console.log("Load more");
-    this.loadPhotos();
+    this.loadPhotos(this.state.query, this.state.page + 1);
   };
 
   closeModal = () => {
@@ -111,9 +74,7 @@ class App extends React.Component {
                 photo={photo}
                 key={photo.id}
                 onClick={(url) => {
-                  //console.log(url);
-                  this.largeURL = url;
-                  this.setState({ enableModal: true });
+                  this.setState({ enableModal: true, largeURL: url });
                 }}
               />
             );
@@ -130,7 +91,7 @@ class App extends React.Component {
         )}
         {this.state.enableLoadMore && <Button onClick={this.onLoadMore} />}
         {this.state.enableModal && (
-          <Modal url={this.largeURL} onClose={this.closeModal} />
+          <Modal url={this.state.largeURL} onClose={this.closeModal} />
         )}
       </div>
     );
